@@ -1,12 +1,5 @@
 # audacious-app
 
-## TODO
-
-- add map to details page
-- hover over row, highlight extent, vice versa
-
----
-
 # Building an Application
 
 ## Scaffold the application
@@ -488,3 +481,10 @@ and
   {{/link-to}}
 </td>
 ```
+
+---
+
+## TODO
+
+- add map to details page
+- hover over row, highlight extent, vice versa
