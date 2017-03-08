@@ -104,7 +104,7 @@ body {
 ### Add index controller
 
 - `ember g controller index`
-- open app/index/controller.js and add the following to the controller definition:
+- `app/index/controller.js` ==>
 
 ```js
 actions: {
@@ -131,6 +131,13 @@ export default Ember.Route.extend({
   // update the model by calling the "model()" hook again
   queryParams: {
     q: { refreshModel: true }
+  },
+
+  model () {
+    return {
+      total: 0,
+      results: []
+    }
   }
 
 });
@@ -164,8 +171,7 @@ export default Ember.Route.extend({
 
 ### Add torii and torii-provider-arcgis
 
-- `ember install ember-network && ember install torii
-&& ember install torii-provider-arcgis`
+- `ember install ember-network && ember install torii && ember install torii-provider-arcgis`
 - in config/environment.js add:
 
 ```js
@@ -187,9 +193,11 @@ torii: {
 ```html
 <ul class="nav navbar-nav navbar-right">
   {{#if session.isAuthenticated}}
-  <li><a href="#" {{action 'signout'}}>Sign Out</a></li>
+    <li><a href="#" {{action 'signout'}}>Sign Out</a></li>
   {{else}}
-  {{#active-link}}<a href="#" {{action 'signin'}}>Sign In</a>{{/active-link}}
+    {{#active-link}}
+      <a href="#" {{action 'signin'}}>Sign In</a>
+    {{/active-link}}
   {{/if}}
 </ul>
 ```
@@ -217,8 +225,6 @@ actions: {
   }
 }
 ```
-
-- `ambitious-arcgis-app.js` ==>
 
 ### Add a user dropdown
 
@@ -266,7 +272,7 @@ _initSession () {
 ### Add ember-arcgis-portal-services and implement model hook
 
 - `ember install ember-arcgis-portal-services`
-- `app/items/route.js inject` ==>
+- `app/items/route.js` ==>
 
 ```js
   // from ember-arcgis-portal-services
@@ -326,6 +332,7 @@ and
 return itemsService.search({ q, num: params.num, start: params.start });
 ```
 
+- `ember g controller items`
 - `app/items/controller.js` ==>
 
 ```js
@@ -335,18 +342,11 @@ start: 1,
 num: 10,
 ```
 
-and
-
-```js
-// for a new query string, start on first page
-queryParams: { q , start: 1 }
-```
-
 - `app/index/controller.js` ==>
 
 ```js
 // for a new query string, start on first page
-queryParams: { q , start: 1 }
+queryParams: { q, start: 1 }
 ```
 
 - `app/items/template.hbs` ==>
@@ -404,7 +404,6 @@ export default Ember.Component.extend({
 
 ## Add search component to items page
 
-- `ember g controller items`
 - `app/items/controller.js` ==>
 
 ```js
@@ -412,7 +411,7 @@ actions: {
   doSearch (q) {
     // NOTE: don't need to pass route name b/c same route
     this.transitionToRoute('items', {
-      queryParams: { q }
+      queryParams: { q, start: 1 }
     });
   }
 }
