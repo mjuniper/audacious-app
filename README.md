@@ -463,6 +463,12 @@ model (params) {
 <div class="row">
   <div class="col-md-9">
     <h1>{{model.item.title}}</h1>
+    <dl>
+      <dt>Type</dt>
+      <dd>{{model.item.type}}</dd>
+      <dt>Description</dt>
+      <dd>{{model.item.description}}</dd>
+    </dl>
   </div>
 </div>
 ```
