@@ -1,7 +1,5 @@
 # audacious-app
 
-# Building an Application
-
 ## Scaffold the application
 
 1. `ember new audacious-app`
