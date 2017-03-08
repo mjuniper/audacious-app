@@ -2,7 +2,6 @@
 
 ## TODO
 
-- add items/:id route
 - add map to details page
 - hover over row, highlight extent, vice versa
 
@@ -437,4 +436,49 @@ actions: {
     {{search-form q=q onSearch=(action "doSearch") class="search-form-inline"}}
   </div>
 </div>
+```
+
+## Create an item details nested route
+
+- `ember g route items/item --path=:id`
+- `app/items/item/route.js` ==>
+
+```js
+itemsService: Ember.inject.service('items-service'),
+
+model (params) {
+  const itemsService = this.get('itemsService');
+  return Ember.RSVP.hash({
+    item: itemsService.getById(params.id),
+    data: itemsService.getDataById(params.id).catch(() => {})
+  });
+}
+```
+
+- move existing items stuff into `app/items/index`
+
+- `app/items/item/template.hbs` ==>
+
+```html
+<div class="row">
+  <div class="col-md-9">
+    <h1>{{model.item.title}}</h1>
+  </div>
+</div>
+```
+
+- `app/items/index/template.hbs` ==>
+
+```html
+<th class="text-center">Info</th>
+```
+
+and
+
+```html
+<td class="text-center">
+  {{#link-to "items.item" item.id}}
+    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+  {{/link-to}}
+</td>
 ```

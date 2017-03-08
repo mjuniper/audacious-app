@@ -15,6 +15,7 @@
           <th>Title</th>
           <th>Type</th>
           <th>Owner</th>
+          <th class="text-center">Info</th>
         </tr>
       </thead>
       <tbody>
@@ -23,6 +24,11 @@
             <td>{{item.title}}</td>
             <td>{{item.type}}</td>
             <td>{{item.owner}}</td>
+            <td class="text-center">
+              {{#link-to "items.item" item.id}}
+                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              {{/link-to}}
+            </td>
           </tr>
         {{/each}}
       </tbody>
