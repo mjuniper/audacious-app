@@ -17,9 +17,41 @@ module.exports = function(environment) {
       }
     },
 
+    torii: {
+      sessionServiceName: 'session',
+      providers: {
+       'arcgis-oauth-bearer': {
+          apiKey: 'AUgdcuQ5IgPR3nbp',
+          portalUrl: 'https://www.arcgis.com'
+        }
+      }
+    },
+
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+      map: {
+        options: {
+          basemap: 'gray'
+        },
+        itemExtents: {
+          symbol: {
+            color: [51, 122, 183, 0.125],
+            outline: {
+              color: [51, 122, 183, 1],
+              width: 1,
+              type: 'simple-line',
+              style: 'solid'
+            },
+            type: 'simple-fill',
+            style: 'solid'
+          },
+          popupTemplate: {
+            title: '{title}',
+            content: '{snippet}'
+          }
+        }
+      }
     }
   };
 
