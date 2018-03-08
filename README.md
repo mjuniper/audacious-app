@@ -12,9 +12,10 @@ You will need the following things properly installed on your computer.
 
 ## Scaffold the application
 
-1. `ember new audacious-app --no-welcome --yarn`
-1. `ember s`
-1. [localhost:4200](http://localhost:4200)
+- `ember new audacious-app --no-welcome --yarn`
+- `ember s`
+- [localhost:4200](http://localhost:4200)
+
 
 - working (tho barebones) app
 - development server with live-reload
