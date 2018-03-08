@@ -1,91 +1,86 @@
 # audacious-app
 
+## Prerequisites
+
+You will need the following things properly installed on your computer.
+
+* [Git](https://git-scm.com/)
+* [Node.js](https://nodejs.org/)
+* [Yarn](https://yarnpkg.com/)
+* [Ember CLI](https://ember-cli.com/)
+* [Google Chrome](https://google.com/chrome/)
+
 ## Scaffold the application
 
-1. `ember new audacious-app`
+1. `ember new audacious-app --no-welcome --yarn`
 1. `ember s`
 1. [localhost:4200](http://localhost:4200)
 
-## Use Pods structure
+- working (tho barebones) app
+- development server with live-reload
+- build pipeline with template compilation js/css minification, etc, etc, etc
+- ESNext features via babel
+- testing framework
+- js linting
 
-1. `.ember-cli` ==> `"usePods": true`
-1. `mkdir app/application && mv app/templates/application.hbs app/application/template.hbs && rm -rf app/controllers app/routes app/templates`
+## Add template linting
+
+- `ember install ember-cli-template-lint`
 
 ## Add some markup and CSS
 
-- `app/styles/app.css` ==>
+- `ember install ember-bootstrap`
+- `ember generate ember-bootstrap --bootstrap-version=4 --preprocessor=sass`
+- `rm app/styles/app.css`
+- `app/styles/app.scss` ==>
 
 ```css
-/* bootstrap styles */
-@import "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";
-
 body {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-.navbar {
-  margin-bottom: 20px;
+  padding-top: 3.5rem;
 }
 ```
 
-- `app/application/template.hbs` ==>
+- `app/templates/application.hbs` ==>
 
-```html
-<div class="container">
+```htmlbars
+{{#bs-navbar class="navbar-expand-md navbar-dark fixed-top bg-dark" as |navbar|}}
+  <div class="navbar-header">
+    {{navbar.toggle}}
+    {{#link-to 'index' class="navbar-brand"}}Audacious ArcGIS App{{/link-to}}
+  </div>
+{{/bs-navbar}}
 
-  <!-- navbar -->
-  <nav class="navbar navbar-default">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <span class="navbar-brand">Audacious ArcGIS App</span>
-      </div>
-    </div><!--/.container-fluid -->
-  </nav>
-
-  <!-- page content -->
+<div class="container mt-5">
   {{outlet}}
-
-</div> <!-- /container -->
+</div>
 ```
 
 ## Scaffold some routes
 
 ### Add index route
 
-- `ember g route index`
-- Download https://livingatlas.arcgis.com/assets/img/background-banners/Banner9.jpg ==> `/public/assets/images/Banner9.jpg`
-- `app/styles/app.css` ==>
+- `ember generate route index`
+- Download https://livingatlas.arcgis.com/assets/img/background-banners/Banner9.jpg ==> `public/assets/images/Banner9.jpg`
+- `app/styles/app.scss` ==>
 
 ```css
 /* index */
-.jumbotron-hero {
+.jumbotron {
   background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(./images/Banner9.jpg) center top/cover no-repeat;
-}
-.jumbotron-hero h1 {
-  color:#fff;
-  text-shadow: 0 3px 2px rgba(0,0,0,0.75);
-  text-align: center;
-  padding-bottom: 40px;
-  border-bottom: 1px solid #fff;
-  margin-bottom: 40px;
 }
 ```
 
-- `app/index/template.hbs` ==>
+- `app/templates/index.hbs` ==>
 
-```html
-<!-- Main component for a primary marketing message or call to action -->
-<div class="jumbotron jumbotron-hero">
-  <h1>Audacious ArcGIS App</h1>
+```htmlbars
+<div class="jumbotron">
+  <h1 class="display-3 text-light text-center mb-5">Audacious ArcGIS App</h1>
   <form {{action "doSearch" q on="submit"}}>
     <div class="input-group input-group-lg">
       {{input class="form-control" placeholder="search for items" value=q}}
-      <span class="input-group-btn">
-        <button class="btn btn-default" type="submit">
-          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-        </button>
-      </span>
+      <div class="input-group-append">
+        <button class="btn btn-secondary" type="submit">Search</button>
+      </div>
     </div>
   </form>
 </div>
@@ -94,7 +89,7 @@ body {
 ### Add index controller
 
 - `ember g controller index`
-- `app/index/controller.js` ==>
+- `app/controllers/index.js` ==>
 
 ```js
 actions: {
@@ -111,12 +106,13 @@ actions: {
 ### Add items route
 
 - `ember g route items`
-- `app/items/route.js` ==>
+- `app/routes/items.js` ==>
 
 ```js
-import Ember from 'ember';
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
+export default Route.extend({
+
   // changes to these query parameter will cause this route to
   // update the model by calling the "model()" hook again
   queryParams: {
@@ -133,36 +129,35 @@ export default Ember.Route.extend({
 });
 ```
 
-- `app/items/template.hbs` ==>
+- `app/templates/items.hbs` ==>
 
-```html
+```htmlbars
 <h2>Your search for "{{q}}" yielded {{model.total}} items</h2>
 ```
 
-- visit http://localhost:4200/items?q=test and http://localhost:4200/items?q=test&type=maps
-
 ## Add nav
 
-- `ember install ember-cli-active-link-wrapper`
-- `app/application/template.hbs` ==>
+- `app/templates/application.hbs` ==>
 
-```html
-<ul class="nav navbar-nav">
-  {{#active-link}}
-    {{link-to "Home" "index"}}
-  {{/active-link}}
-  {{#active-link}}
-    {{link-to "Items" "items"}}
-  {{/active-link}}
-</ul>
+```htmlbars
+{{#navbar.content}}
+  {{#navbar.nav as |nav|}}
+    {{#nav.item}}
+      {{#nav.link-to "index"}}Home{{/nav.link-to}}
+    {{/nav.item}}
+    {{#nav.item}}
+      {{#nav.link-to "items"}}Items{{/nav.link-to}}
+    {{/nav.item}}
+  {{/navbar.nav}}
+{{/navbar.content}}
 ```
 
 ## Add auth
 
 ### Add torii and torii-provider-arcgis
 
-- `ember install ember-network && ember install torii && ember install torii-provider-arcgis`
-- in config/environment.js add:
+- `ember install torii && ember install torii-provider-arcgis`
+- `config/environment.js` ==>
 
 ```js
 torii: {
@@ -178,67 +173,70 @@ torii: {
 
 ### Add some markup
 
-`/app/application/template.hbs`
+`app/templates/application.hbs`
 
-```html
-<ul class="nav navbar-nav navbar-right">
+```htmlbars
+{{#navbar.nav class="ml-auto" as |nav| }}
   {{#if session.isAuthenticated}}
-    <li><a href="#" {{action 'signout'}}>Sign Out</a></li>
+    {{#nav.item class="ml-auto"}}
+      <a class="nav-link active" href="#" {{action 'signout'}}>Sign Out</a>
+    {{/nav.item}}
   {{else}}
-    {{#active-link}}
-      <a href="#" {{action 'signin'}}>Sign In</a>
-    {{/active-link}}
+    {{#nav.item class="ml-auto"}}
+      <a class="nav-link active" href="#" {{action 'signin'}}>Sign In</a>
+    {{/nav.item}}
   {{/if}}
-</ul>
+{{/navbar.nav}}
 ```
 
 ### Add an application route with some actions
 
 - `ember g route application`
-- `/app/application/route.js` ==>
+- `app/routes/application.js` ==>
 
 ```js
-actions: {
-  signin () {
-    this.get('session').open('arcgis-oauth-bearer')
+import Route from '@ember/routing/route';
+import { debug } from '@ember/debug';
+
+export default Route.extend({
+
+  actions: {
+    signin () {
+      this.get('session').open('arcgis-oauth-bearer')
       .then((authorization) => {
-        Ember.debug('AUTH SUCCESS: ', authorization);
+        debug('AUTH SUCCESS: ', authorization);
         //transition to some secured route or... so whatever is needed
         this.transitionTo('index');
       })
       .catch((err)=>{
-        Ember.debug('AUTH ERROR: ', err);
+        debug('AUTH ERROR: ', err);
       });
-  },
-  signout () {
-    this.get('session').close();
+    },
+    signout () {
+      this.get('session').close();
+    }
   }
-}
+
+});
 ```
 
 ### Add a user dropdown
+- `app/templates/application.hbs` ==>
 
-- `app/index.html` ==>
-```
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
-```
-
-- `app/application/template.hbs` ==>
-
-```html
-{{#if session.isAuthenticated}}
-  <li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{session.currentUser.fullName}} <span class="caret"></span></a>
-    <ul class="dropdown-menu">
-      <li><a href="#" {{action 'signout'}}>Sign Out</a></li>
-    </ul>
-  </li>
-{{else}}
+```htmlbars
+{{#nav.dropdown as |dd|}}
+  {{#dd.toggle class="ml-auto"}}{{session.currentUser.fullName}}
+    <span class="caret"></span>
+  {{/dd.toggle}}
+  {{#dd.menu as |ddm|}}
+    {{#ddm.item}}<a class="dropdown-item" href="#" {{action 'signout'}}>Sign Out</a>{{/ddm.item}}
+  {{/dd.menu}}
+{{/nav.dropdown}}
 ```
 
 ### Make auth persistent
 
-- `/app/application/route.js` ==>
+- `app/routes/application.js` ==>
 
 ```js
 beforeModel () {
@@ -247,13 +245,13 @@ beforeModel () {
 
 _initSession () {
   return this.get('session').fetch()
-    .then(() => {
-      Ember.debug('User has been automatically logged in... ');
-    })
-    .catch((/*err*/) => {
-      // we want to catch this, otherwise Ember will redirect to an error route!
-      Ember.debug('No cookie was found, user is anonymous... ');
-    });
+  .then(() => {
+    debug('User has been automatically logged in... ');
+  })
+  .catch((/*err*/) => {
+    // we want to catch this, otherwise Ember will redirect to an error route!
+    debug('No cookie was found, user is anonymous... ');
+  });
 },
 ```
 
@@ -262,11 +260,15 @@ _initSession () {
 ### Add ember-arcgis-portal-services and implement model hook
 
 - `ember install ember-arcgis-portal-services`
-- `app/items/route.js` ==>
+- `app/routes/items.js` ==>
+
+```js
+import { inject as service } from '@ember/service';
+```
 
 ```js
   // from ember-arcgis-portal-services
-  itemsService: Ember.inject.service('items-service'),
+  itemsService: service('items-service'),
 
   // the model hook is used to fetch any data based on route parameters
   model (params) {
@@ -278,13 +280,13 @@ _initSession () {
 
 ### Display the results
 
-- `app/items/template.hbs` ==>
+- `app/templates/items.hbs` ==>
 
-```html
+```htmlbars
 <div class="row">
-  <div class="col-md-12">
-    <table class="table table-responsive table-bordered table-hover table-striped">
-      <thead>
+  <div class="col-12">
+    <table class="table table-striped table-bordered table-hover">
+      <thead class="thead-dark">
         <tr>
           <th>Title</th>
           <th>Type</th>
@@ -307,8 +309,31 @@ _initSession () {
 
 ## Add pagination
 
-- `ember install ember-arcgis-opendata-components`
-- `app/items/route.js` ==>
+- `ember install ember-intl && ember install ember-arcgis-portal-components`
+- `.template-lintrc.js` ==>
+
+```js
+rules: {
+  'bare-strings': false
+}
+```
+
+- `app/routes/application.js` ==>
+
+```js
+import { inject as service } from '@ember/service';
+```
+
+```js
+intl: service(),
+```
+
+```js
+// add to beforeModel
+this.get('intl').setLocale('en-us');
+```
+
+- `app/routes/items.js` ==>
 
 ```js
 // paging query params
@@ -316,66 +341,100 @@ start: { refreshModel: true },
 num: { refreshModel: true },
 ```
 
-and
-
 ```js
 return itemsService.search({ q, num: params.num, start: params.start });
 ```
 
 - `ember g controller items`
-- `app/items/controller.js` ==>
+- `app/controllers/items.js` ==>
 
 ```js
-// query parameters used by components
-queryParams: ['start', 'num'],
-start: 1,
-num: 10,
+import Controller from '@ember/controller';
+import { computed } from '@ember/object';
+
+export default Controller.extend({
+
+  // query parameters used by components
+  queryParams: [ 'start', 'num' ],
+  start: 1,
+  num: 10,
+
+  // compute current page number based on start record
+  // and the number of records per page
+  pageNumber: computed('num', 'model.start', function () {
+    const pageSize = this.get('num');
+    const start = this.get('model.start');
+    return ((start - 1) / pageSize) + 1;
+  }),
+
+  actions: {
+    changePage (page) {
+      // calculate next start record based on
+      // the number of records per page
+      const pageSize = this.get('num');
+      const nextStart = ((page - 1) * pageSize) + 1;
+      this.set('start', nextStart);
+    },
+  }
+});
 ```
 
-- `app/index/controller.js` ==>
+- `app/controllers/index.js` ==>
 
 ```js
 // for a new query string, start on first page
 queryParams: { q, start: 1 }
 ```
 
-- `app/items/template.hbs` ==>
+- `app/templates/items.hbs` ==>
 
 ```html
-{{item-list-pager model=model num=num}}
+{{item-pager
+  pageSize=num
+  totalCount=model.total
+  pageNumber=pageNumber
+  changePage=(action "changePage")
+}}
+```
+
+## Format numbers
+- `app/templates/items.hbs` ==>
+
+```htmlbars
+{{format-number model.total}}
 ```
 
 ## Refactor search into component
 
-- `ember g component search-form`
-- `app/components/search-form/template.hbs` ==>
+- `ember g component ago-search`
+- `app/templates/components/ago-search.hbs` ==>
 
-```html
+```htmlbars
 <form {{action onSearch searchCopy on="submit"}}>
   <div class="input-group {{sizeClass}}">
     {{input class="form-control" placeholder="search for items" value=searchCopy}}
-    <span class="input-group-btn">
-      <button class="btn btn-default" type="submit">
-        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-      </button>
-    </span>
+    <div class="input-group-append">
+      <button class="btn btn-secondary" type="submit">Search</button>
+    </div>
   </div>
 </form>
 ```
 
-- `app/components/search-form/component.js` ==>
+- `app/components/ago-search/component.js` ==>
 
 ```js
-import Ember from 'ember';
+import Component from '@ember/component';
+import { computed } from '@ember/object';
 
-export default Ember.Component.extend({
+export default Component.extend({
+
   classNames: ['search-form'],
 
   // use a copy so that we don't immediately update bound URL parameters
-  searchCopy: Ember.computed.reads('q'),
+  searchCopy: computed.reads('q'),
 
   // allow the consuming template to set the input size ('lg' or 'sm')
-  sizeClass: Ember.computed('size', function () {
+  sizeClass: computed('size', function () {
     const size = this.get('size');
     if (size) {
       return `input-group-${size}`;
@@ -383,23 +442,247 @@ export default Ember.Component.extend({
       return '';
     }
   })
+
 });
 ```
 
 - replace `<form>` tag in app/index/template.hbs with:
 
-```hbs
-{{search-form q=q onSearch=(action "doSearch") size="lg"}}
+```htmlbars
+{{ago-search q=q onSearch=(action "doSearch") size="lg"}}
 ```
 
 ## Add search component to items page
 
-- `app/items/controller.js` ==>
+- `app/controllers/items.js` ==>
+
+```js
+// add to `actions` hash
+doSearch (q) {
+  // NOTE: don't need to pass route name b/c same route
+  this.transitionToRoute({
+    queryParams: { q, start: 1 }
+  });
+}
+```
+
+- `app/styles/app.scss` ==>
+
+```css
+/* items */
+.search-form-inline {
+  margin-top: 5px;
+}
+```
+
+- `app/templates/items.hbs` ==>
+
+```htmlbars
+<div class="row mb-2">
+  <div class="col-9">
+    <h2>Your search for "{{q}}" yielded {{format-number model.total}} items</h2>
+  </div>
+  <div class="col-3">
+    {{ago-search q=q onSearch=(action "doSearch") class="search-form-inline" size="sm"}}
+  </div>
+</div>
+```
+
+## Add a map
+
+- `ember install ember-esri-loader`
+- `config/environment.js` ==>
+
+```js
+map: {
+  options: {
+    basemap: 'gray'
+  },
+  itemExtents: {
+    symbol: {
+      color: [51, 122, 183, 0.125],
+      outline: {
+        color: [51, 122, 183, 1],
+        width: 1,
+        type: 'simple-line',
+        style: 'solid'
+      },
+      type: 'simple-fill',
+      style: 'solid'
+    },
+    popupTemplate: {
+      title: '{title}',
+      content: '{snippet}'
+    }
+  }
+}
+```
+
+- restart server
+- `app/styles/app.scss` ==>
+
+```css
+/* esri styles */
+@import url('https://js.arcgis.com/4.6/esri/css/main.css');
+
+/* map */
+.extents-map {
+  height: 300px;
+}
+```
+
+- `ember g service map-service`
+- `app/services/map-service.js` ==>
+
+```js
+import Service from '@ember/service';
+import { inject as service } from '@ember/service';
+
+export default Service.extend({
+  esriLoader: service('esri-loader'),
+  // create a new map object at an element
+  newMap(element, mapOptions) {
+    // load the map modules
+    return this.get('esriLoader').loadModules(['esri/Map', 'esri/views/MapView', 'esri/Graphic'])
+    .then(([Map, MapView, Graphic]) => {
+      if (!element || this.get('isDestroyed') || this.get('isDestroying')) {
+        // component or app was likely destroyed
+        return;
+      }
+      // create function to return new graphics
+      this._newGraphic = (jsonGraphic) => {
+        return new Graphic(jsonGraphic);
+      };
+      var map = new Map(mapOptions);
+      // show the map at the element and
+      // hold on to the view reference for later operations
+      this._view = new MapView({
+        map,
+        container: element,
+        zoom: 2
+      });
+      return this._view.when(() => {
+        this._view.on("mouse-wheel", function(evt){
+          // prevents zooming with the mouse-wheel event
+          evt.stopPropagation();
+        });
+        // let the caller know that the map is available
+        return;
+      });
+    });
+  },
+
+  // clear and add graphics to the map
+  refreshGraphics (jsonGraphics) {
+    const view = this._view;
+    if (!view || !view.ready) {
+      return;
+    }
+    // clear any existing graphics
+    view.graphics.removeAll();
+    // convert json to graphics and add to map's graphic layer
+    if (!jsonGraphics || jsonGraphics.length === 0) {
+      return;
+    }
+    jsonGraphics.forEach(jsonGraphic => {
+      view.graphics.add(this._newGraphic(jsonGraphic));
+    });
+  },
+
+  // destroy the map if it was already created
+  destroyMap() {
+    if (this._view) {
+      delete this._view;
+    }
+  }
+});
+```
+
+- `ember g component extents-map`
+- `rm app/templates/components/extents-map.hbs`
+- `app/components/extents-map.js` ==>
+
+```js
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
+import config from '../config/environment';
+
+export default Component.extend({
+  classNames: ['extents-map'],
+
+  mapService: service('map-service'),
+
+  // wait until after the component is added to the DOM before creating the map
+  didInsertElement () {
+    this._super(...arguments);
+    // create a map at this element's DOM node
+    const mapService = this.get('mapService');
+    // create a map at this element's DOM node
+    mapService.newMap(this.elementId, config.APP.map.options)
+    .then(() => {
+      this.showItemsOnMap();
+    });
+  },
+
+  // whenever items change, update the map
+  didUpdateAttrs () {
+    this.showItemsOnMap();
+  },
+
+  // destroy the map before this component is removed from the DOM
+  willDestroyElement () {
+    this._super(...arguments);
+    const mapService = this.get('mapService');
+    mapService.destroyMap();
+  },
+
+  // show new item extents on map
+  showItemsOnMap () {
+    const { symbol, popupTemplate } = config.APP.map.itemExtents;
+    const items = this.get('items');
+    const jsonGraphics = items && items.map(item => {
+      const geometry = this.coordsToExtent(item.extent);
+      return { geometry, symbol, attributes: item, popupTemplate };
+    });
+    this.get('mapService').refreshGraphics(jsonGraphics);
+  },
+
+  coordsToExtent (coords) {
+    if (coords && coords.length === 2) {
+      return {
+        type: 'extent',
+        xmin: coords[0][0],
+        ymin: coords[0][1],
+        xmax: coords[1][0],
+        ymax: coords[1][1],
+        spatialReference:{
+          wkid:4326
+        }
+      };
+    }
+  }
+
+});
+```
+
+- `app/templates/items.js` ==>
+
+```htmlbars
+<div class="row mb-3">
+  <div class="col-12">
+    {{extents-map items=model.results}}
+  </div>
+</div>
+```
+
+## Refactor search action into a mixin
+
+- `ember g mixin search-controller`
+- `app/mixins/search-controller.js` ==>
 
 ```js
 actions: {
   doSearch (q) {
-    // NOTE: don't need to pass route name b/c same route
     this.transitionToRoute('items', {
       queryParams: { q, start: 1 }
     });
@@ -407,82 +690,123 @@ actions: {
 }
 ```
 
-- `app/styles/app.css` ==>
+- `app/controllers/index.js` ==>
 
-```css
-/* items */
-.search-form-inline {
-  margin-top: 20px;
-}
+```js
+import Controller from '@ember/controller';
+import SearchController from 'audacious-app/mixins/search-controller';
+
+export default Controller.extend(SearchController, {
+});
 ```
 
-- `app/items/template.hbs` ==>
+- `app/controllers/items.js` ==>
 
-```hbs
-<div class="row">
-  <div class="col-md-9">
-    <h2>Your search for "{{q}}" yielded {{model.total}} items</h2>
-  </div>
-  <div class="col-md-3">
-    {{search-form q=q onSearch=(action "doSearch") class="search-form-inline"}}
-  </div>
-</div>
+```js
+import Controller from '@ember/controller';
+import SearchController from 'audacious-app/mixins/search-controller';
+import { computed } from '@ember/object';
+
+export default Controller.extend(SearchController, {
+
+  // query parameters used by components
+  queryParams: ['start', 'num'],
+  start: 1,
+  num: 10,
+
+  // compute current page number based on start record
+  // and the number of records per page
+  pageNumber: computed('num', 'model.start', function () {
+    const pageSize = this.get('num');
+    const start = this.get('model.start');
+    return ((start - 1) / pageSize) + 1;
+  }),
+
+  actions: {
+    changePage (page) {
+      // calculate next start record based on
+      // the number of records per page
+      const pageSize = this.get('num');
+      const nextStart = ((page - 1) * pageSize) + 1;
+      this.set('start', nextStart);
+    }
+  }
+
+});
 ```
 
 ## Create an item details nested route
 
-- `ember g route items/item --path=:id`
-- `app/items/item/route.js` ==>
+- `ember g route items/item --path=:item_id`
+- `app/routes/items/item.js` ==>
 
 ```js
-itemsService: Ember.inject.service('items-service'),
+import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
+import { hash } from 'rsvp';
 
-model (params) {
-  const itemsService = this.get('itemsService');
-  return Ember.RSVP.hash({
-    item: itemsService.getById(params.id),
-    data: itemsService.getDataById(params.id).catch(() => {})
-  });
-}
+export default Route.extend({
+
+  itemsService: service('items-service'),
+
+  model (params) {
+    const itemsService = this.get('itemsService');
+    return hash({
+      item: itemsService.getById(params.item_id),
+      data: itemsService.getDataById(params.item_id).catch(() => {})
+    });
+  }
+
+});
 ```
 
-- move existing items stuff into `app/items/index`
+- `templates/items.hbs` ==> `templates/items/index.hbs`
+- `controllers/items.js` ==> `controllers/items/index.js`
+- `routes/items.js` ==> `routes/items/index.js`
 
-- `app/items/item/template.hbs` ==>
+- `app/templates/items/item.hbs` ==>
 
-```html
+```htmlbars
 <div class="row">
-  <div class="col-md-9">
+  <div class="col-9">
     <h1>{{model.item.title}}</h1>
     <dl>
       <dt>Type</dt>
       <dd>{{model.item.type}}</dd>
       <dt>Description</dt>
-      <dd>{{model.item.description}}</dd>
+      <dd>{{itemDescription}}</dd>
     </dl>
   </div>
 </div>
 ```
 
-- `app/items/index/template.hbs` ==>
+- `ember g controller items/item`
+- `app/controllers/items/item.js` ==>
 
-```html
+```js
+import Controller from '@ember/controller';
+import { computed } from '@ember/object';
+import { htmlSafe } from '@ember/string';
+
+export default Controller.extend({
+
+  itemDescription: computed('model.item.description', function () {
+    return htmlSafe(this.get('model.item.description'));
+  })
+
+});
+```
+
+- `app/templates/items/index.hbs` ==>
+
+```htmlbars
 <th class="text-center">Info</th>
 ```
 
-and
-
-```html
+```htmlbars
 <td class="text-center">
   {{#link-to "items.item" item.id}}
-    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+    Details
   {{/link-to}}
 </td>
 ```
-
----
-
-## TODO
-
-- add map to details page
-- hover over row, highlight extent, vice versa
