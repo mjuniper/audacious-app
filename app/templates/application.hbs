@@ -1,1 +1,41 @@
-{{outlet}}
+{{#bs-navbar class="navbar-expand-md navbar-dark fixed-top bg-dark" as |navbar|}}
+  <div class="navbar-header">
+    {{navbar.toggle}}
+    {{#link-to 'index' class="navbar-brand"}}Audacious ArcGIS App{{/link-to}}
+  </div>
+  {{#navbar.content}}
+    {{#navbar.nav as |nav|}}
+      {{#nav.item}}
+        {{#nav.link-to "index"}}Home{{/nav.link-to}}
+      {{/nav.item}}
+      {{#nav.item}}
+        {{#nav.link-to "items"}}Items{{/nav.link-to}}
+      {{/nav.item}}
+    {{/navbar.nav}}
+  {{/navbar.content}}
+
+  {{#navbar.nav class="ml-auto" as |nav| }}
+    {{#if session.isAuthenticated}}
+    {{#nav.dropdown as |dd|}}
+  {{#dd.toggle class="ml-auto"}}
+    {{session.currentUser.fullName}}
+    <span class="caret"></span>
+  {{/dd.toggle}}
+  {{#dd.menu as |ddm|}}
+    {{#ddm.item}}<a class="dropdown-item" href="#" {{action 'signout'}}>Sign Out</a>{{/ddm.item}}
+  {{/dd.menu}}
+  {{/nav.dropdown}}
+
+  {{else}}
+    {{#nav.item class="ml-auto"}}
+      <a class="nav-link active" href="#" {{action 'signin'}}>Sign In</a>
+    {{/nav.item}}
+  {{/if}}
+{{/navbar.nav}}
+
+
+{{/bs-navbar}}
+
+<div class="container mt-5">
+  {{outlet}}
+</div>
